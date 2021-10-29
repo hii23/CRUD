@@ -16,13 +16,16 @@ class EmployeesAddForm extends Component {
         })
     }
 
+
     render() {
         const {name, salary} = this.state;
+        const {addItem} = this.props;
         return (
             <div className="app-add-form">
                 <h3>Добавьте нового сотрудника</h3>
                 <form
-                    className="add-form d-flex">
+                    className="add-form d-flex"
+                    onSubmit={(event) => addItem(event,name, salary)}>
                     <input type="text"
                            className="form-control new-post-label"
                            placeholder="Как его зовут?"
