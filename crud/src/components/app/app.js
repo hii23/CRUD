@@ -19,6 +19,7 @@ class App extends Component {
                 {name: 'Ted L.', salary: 500, increase: false, rise: false, id: 3},
             ],
             idMax: 4,
+            term: '',
         }
     }
 
@@ -31,7 +32,7 @@ class App extends Component {
         })
     }
 
-    onToggleProp = (id,prop) => {
+    onToggleProp = (id, prop) => {
         this.setState(({data}) => ({
             data: data.map(item => {
                 if (item.id === id) {
@@ -41,25 +42,37 @@ class App extends Component {
         }))
     }
 
+    searchItem = (items, term) => {
+        return items.filter(item => {
+            return item.name.indexOf(term) > -1
+        })
+    }
 
+    onUpdateSearch = (term) => {
+        this.setState(({term}))
+    }
 
     addItem = (event, name, salary) => {
-        event.preventDefault();
-        this.setState(({data, idMax}) => ({
-                data: [
-                    ...data,
-                    {name, salary, increase: false, rise: true, id: idMax,}
-                ],
-                idMax: idMax + 1,
-            })
-        )
+        if (name && salary) {
+            event.preventDefault();
+            this.setState(({data, idMax}) => ({
+                    data: [
+                        ...data,
+                        {name, salary, increase: false, rise: false, id: idMax,}
+                    ],
+                    idMax: idMax + 1,
+                })
+            )
+        }
+
     }
 
     render() {
 
-        const {data} = this.state;
+        const {data, term} = this.state;
         const employees = data.length;
-        const increased = data.filter(item=>item.increase).length
+        const increased = data.filter(item => item.increase).length;
+        const visibleDate = this.searchItem(data, term)
         return (
             <div className={'app'}>
                 <AppInfo
@@ -68,11 +81,13 @@ class App extends Component {
                 />
 
                 <div className={'search-panel'}>
-                    <SearchPanel/>
+                    <SearchPanel
+                        onUpdateSearch={this.onUpdateSearch}
+                    />
                     <AppFilter/>
                 </div>
                 <EmployeesList
-                    data={data}
+                    data={visibleDate}
                     onDelete={this.deleteItem}
                     onToggleProp={this.onToggleProp}
 
