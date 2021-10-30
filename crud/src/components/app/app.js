@@ -20,6 +20,7 @@ class App extends Component {
             ],
             idMax: 4,
             term: '',
+            filter: 'app',
         }
     }
 
@@ -42,16 +43,6 @@ class App extends Component {
         }))
     }
 
-    searchItem = (items, term) => {
-        return items.filter(item => {
-            return item.name.indexOf(term) > -1
-        })
-    }
-
-    onUpdateSearch = (term) => {
-        this.setState(({term}))
-    }
-
     addItem = (event, name, salary) => {
         if (name && salary) {
             event.preventDefault();
@@ -67,12 +58,38 @@ class App extends Component {
 
     }
 
+    searchItem = (items, term) => {
+        return items.filter(item => {
+            return item.name.indexOf(term) > -1
+        })
+    }
+
+    onUpdateSearch = (term) => {
+        this.setState(({term}))
+    }
+
+    filterPost = (items, filter) => {
+        switch (filter) {
+            case "rise":
+                return items.filter(item => item.rise)
+            case "salary":
+                return items.filter(item => item.salary > 1000)
+            default:
+                return items
+        }
+    }
+
+    onUpdateFilter = (filter) => {
+        this.setState(({filter}))
+    }
+
+
     render() {
 
-        const {data, term} = this.state;
+        const {data, term, filter} = this.state;
         const employees = data.length;
         const increased = data.filter(item => item.increase).length;
-        const visibleDate = this.searchItem(data, term)
+        const visibleDate = this.filterPost(this.searchItem(data, term), filter);
         return (
             <div className={'app'}>
                 <AppInfo
@@ -84,7 +101,10 @@ class App extends Component {
                     <SearchPanel
                         onUpdateSearch={this.onUpdateSearch}
                     />
-                    <AppFilter/>
+                    <AppFilter
+                        filter={filter}
+                        onUpdateFilter={this.onUpdateFilter}
+                    />
                 </div>
                 <EmployeesList
                     data={visibleDate}
